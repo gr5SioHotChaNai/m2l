@@ -7,6 +7,7 @@ public class Parametres
 	private String serveurBD;
 	private String driverSGBD;
 	public Parametres (){
+		//Modifier nomUtiliateur, motDePasse et la dernière partie de serveurBD
       	nomUtilisateur = "sa";
 	  	motDePasse = "aazz";		
 	  	driverSGBD ="sun.jdbc.odbc.JdbcOdbcDriver";
