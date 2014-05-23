@@ -42,7 +42,12 @@ public class Benevole extends Participant
 			+super.getCpparticipant()+ "','"+ super.getVilleparticipant()+ "','"
 			+super.getMailparticipant()+ "','"+ super.getStatutparticipant()+"','"
 			+this.getNolicencebenevole()+ "','"+ this.getDatenaissbenevole()+ "')"; 
-		}
+	}
+	
+	public String req_InsertEtrePresent() {
+		return "insert into ETREPRESENT (IDPARTICIPANT, IDDATEBENEVOLAT) "
+				+ "values(5, 1)"; 
+	}
 
 	public String getType() {
 		return "Benevole";

@@ -24,7 +24,11 @@ public class GestionDemandes
 	{
 		Benevole lBenevole = new Benevole(0, wnom,wprenom,wadr1,wadr2,wcp,wville, wmail, wstatut, wnolicence,wdatenaiss);
 		String requete= lBenevole.req_InsertParticipant();
-		return executeReq(requete);
+		String requete2 = lBenevole.req_InsertEtrePresent();
+		if(executeReq(requete) && executeReq(requete2))
+			return true;
+		else
+			return false;
 	}
 	public boolean enregistrerLicencie	(String wnom,String wprenom, String wadr1, String wadr2, String wcp, String wville, String wmail,String wstatut,Date wdateins, Date wdateenr,String Wclewifi, String wnolicence,int widqualite)
 	{

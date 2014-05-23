@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 //permet d établir le lien avec la classe GestionDemandes
 import controle.GestionDemandes;
 import entite.*;
+import javax.swing.border.TitledBorder;
 public class FenParticipant extends JFrame {
 	private static final long serialVersionUID = 1L;
 	// propriété pour établir le lien avec la classe GestionDemandes
@@ -87,6 +88,8 @@ public class FenParticipant extends JFrame {
 	private JButton Btn_Rechercher = null;
 	private boolean estRechercher=false;
 	private JComboBox<String> cbx_catchambre_nuit2 = null;
+	private JCheckBox check_dateBenev13 = null;
+	private JCheckBox check_dateBenev14 = null;
 	private void regroupeboutons()
 	{
 		groupeboutons.add(radiobtn_licencie);
@@ -100,12 +103,14 @@ public class FenParticipant extends JFrame {
 		groupeOuiNon.add(radiobtn_Non);
 		groupeOuiNon.clearSelection();
 	}
+	
 	private void enregistrerintervenant(){
 		int numatelier=Integer.parseInt(""+((String)cbx_atelier.getSelectedItem()).charAt(0));
 		String Statut="I";
 
 		if(!gestionBD.enregistrerIntervenant(txt_nom.getText().toUpperCase(),txt_prenom.getText(),txt_adr1.getText(), txt_adr2.getText(), txt_cp.getText(), txt_ville.getText(), txt_mail.getText(), Statut, numatelier))
 			return;
+		
 		Integer IdParticipant = gestionBD.rechercherParticipantsurnom(txt_nom.getText()).getNumparticipant();
 		if (getRadiobtn_AnimateurOui().isSelected())
 		{
@@ -133,9 +138,15 @@ public class FenParticipant extends JFrame {
 				gestionBD.enregistrerDetailHebergement(IdParticipant, numordre, numhotel2, categorie2, 1);
 			}
 		}
-		JOptionPane.showMessageDialog(null, "Inscription Intervenant effectuée.",
-				"", JOptionPane.ERROR_MESSAGE);
+		//vide les champs quand l'enregistrement est eefectué ---> tache 1 - mission 2
+		if(this.verification()){
+			this.raz();
+			JOptionPane.showMessageDialog(null, "Inscription Intervenant effectuée.",
+					"", JOptionPane.ERROR_MESSAGE);
+		}
 	}
+	
+	
 	private void enregistrerlicencie(){
 		String Statut="L";
 		SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
@@ -162,6 +173,7 @@ public class FenParticipant extends JFrame {
  	 	if(!gestionBD.enregistrerLicencie(txt_nom.getText(),txt_prenom.getText(),txt_adr1.getText(), txt_adr2.getText(), txt_cp.getText(), txt_ville.getText(), txt_mail.getText(),Statut, dteins,dtearr,txt_clewifi.getText(), txt_nolicence.getText(), idqualite))
 		return;
 	}
+	
 	private void enregistrerbenevole(){
 		String Statut="B";
 		SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
@@ -177,8 +189,8 @@ public class FenParticipant extends JFrame {
 	 	if(!gestionBD.enregistrerBenevole(txt_nom.getText(),txt_prenom.getText(),txt_adr1.getText(), txt_adr2.getText(), txt_cp.getText(), txt_ville.getText(), txt_mail.getText(),Statut, txt_nolicence_B.getText(), dtenais))
 		return;
 	}
-	private void raz()
-	{
+	
+	private void raz(){
 		txt_nom.setText("");
 		txt_prenom.setText("");
 		txt_adr1.setText(" ");
@@ -199,8 +211,8 @@ public class FenParticipant extends JFrame {
 		btn_annuler.setVisible(false);
 		estRechercher=false;
 		regroupeboutons();
-		
 	}
+	
 	private Boolean verification(){
 		/* cas d'insertion dans la base de données */
 		if ((!getRadiobtn_Benevole().isSelected())&&(!getRadiobtn_licencie().isSelected())&&(!getRadiobtn_Intervenant().isSelected())){
@@ -237,11 +249,11 @@ public class FenParticipant extends JFrame {
 			// mise en forme de la fenetre
 			jContentPrincipal = new JPanel();
 			jContentPrincipal.setLayout(null);
+			jContentPrincipal.add(getjContentInscriptionBenevole(), null);
+			jContentPrincipal.add(getjContentInscriptionIntervenant(), null);
+			jContentPrincipal.add(getjContentInscriptionLicencie(), null);
 			jContentPrincipal.add(getjContentChoixParticipant(), null);
 			jContentPrincipal.add(getjContentIdentite(), null);
-			jContentPrincipal.add(getjContentInscriptionIntervenant(), null);
-			jContentPrincipal.add(getjContentInscriptionBenevole(), null);
-			jContentPrincipal.add(getjContentInscriptionLicencie(), null);
 			jContentPrincipal.add(getBtn_quitter(), null);
 			jContentPrincipal.add(getBtn_embaucher(), null);
 			jContentPrincipal.add(getBtn_ok(), null);
@@ -364,6 +376,14 @@ public class FenParticipant extends JFrame {
 			jContentInscriptionBenevole.add(getTxt_nolicence_B(), null);
 			jContentInscriptionBenevole.add(getTxt_dtenais(), null);
 			jContentInscriptionBenevole.add(getCbx_qualite_B(), null);
+			
+			JPanel jContentDateDispoB = new JPanel();
+			jContentDateDispoB.setBorder(new TitledBorder(null, "Date(s) Disponibilit\u00E9", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			jContentDateDispoB.setBounds(21, 139, 671, 98);
+			jContentInscriptionBenevole.add(jContentDateDispoB);
+			jContentDateDispoB.setLayout(null);
+			jContentDateDispoB.add(getCheck_dateBenev13());
+			jContentDateDispoB.add(getCheck_dateBenev14());
 		}
 		return jContentInscriptionBenevole;
 	}
@@ -605,20 +625,20 @@ public class FenParticipant extends JFrame {
 							if (radiobtn_Benevole.isSelected())
 							{
 								enregistrerbenevole();
+								raz();
+								btn_embaucher.setEnabled(false);
+								Btn_Rechercher.setEnabled(false);
+								btn_ok.setVisible(true);
+								btn_annuler.setVisible(true);
+								jContentInscriptionIntervenant.setVisible(false);
+								jContentInscriptionBenevole.setVisible(false);
+								jContentInscriptionLicencie.setVisible(false);
 							}
 							else
 							{
 								enregistrerlicencie();
 							}
 						}
-						raz();
-						btn_embaucher.setEnabled(false);
-						Btn_Rechercher.setEnabled(false);
-						btn_ok.setVisible(true);
-						btn_annuler.setVisible(true);
-						jContentInscriptionIntervenant.setVisible(false);
-						jContentInscriptionBenevole.setVisible(false);
-						jContentInscriptionLicencie.setVisible(false);
 					}
 				}
 				else
@@ -846,7 +866,7 @@ public class FenParticipant extends JFrame {
 			cbx_atelier.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					// permet de récupérer le num atelier
-					System.out.println(((String)cbx_atelier.getSelectedItem()).charAt(0));
+					//System.out.println(((String)cbx_atelier.getSelectedItem()).charAt(0));
 				}
 			});
 		}
@@ -989,6 +1009,18 @@ public class FenParticipant extends JFrame {
 		}
 		return cbx_qualite_B;
 	}
-
-
+	private JCheckBox getCheck_dateBenev13() {
+		if (check_dateBenev13 == null) {
+			check_dateBenev13 = new JCheckBox("Samedi 13 Septembre 2014");
+			check_dateBenev13.setBounds(18, 24, 190, 23);
+		}
+		return check_dateBenev13;
+	}
+	private JCheckBox getCheck_dateBenev14() {
+		if (check_dateBenev14 == null) {
+			check_dateBenev14 = new JCheckBox("Dimanche 14 Septembre 2014");
+			check_dateBenev14.setBounds(18, 50, 184, 23);
+		}
+		return check_dateBenev14;
+	}
 }  //  @jve:decl-index=0:visual-constraint="16,5"
